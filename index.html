@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Conversor de Moedas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e0f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 350px;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #00796b;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #004d40;
+    }
+    .resultado {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Conversor de Moedas</h2>
+    <input type="number" id="valor" placeholder="Digite o valor" />
+    <select id="moedaDe">
+      <option value="USD">Dólar (USD)</option>
+      <option value="EUR">Euro (EUR)</option>
+      <option value="GBP">Libra (GBP)</option>
+    </select>
+    <select id="moedaPara">
+      <option value="BRL">Real (BRL)</option>
+    </select>
+    <button onclick="converter()">Converter</button>
+    <div class="resultado" id="resultado"></div>
+  </div>
+
+  <script>
+    async function converter() {
+      const valor = parseFloat(document.getElementById("valor").value);
+      const moedaDe = document.getElementById("moedaDe").value;
+      const moedaPara = document.getElementById("moedaPara").value;
+
+      if (!valor || moedaDe === moedaPara) {
+        document.getElementById("resultado").innerText = "Verifique os dados.";
+        return;
+      }
+
+      try {
+        const url = `https://economia.awesomeapi.com.br/json/last/${moedaDe}-${moedaPara}`;
+        const resposta = await fetch(url);
+        const dados = await resposta.json();
+        const chave = moedaDe + moedaPara;
+        const cotacao = parseFloat(dados[chave].bid);
+        const convertido = (valor * cotacao).toFixed(2);
+
+        document.getElementById("resultado").innerText =
+          `${valor} ${moedaDe} = ${convertido} ${moedaPara}`;
+      } catch (erro) {
+        document.getElementById("resultado").innerText =
+          "Erro ao buscar taxa de câmbio.";
+      }
+    }
+  </script>
+</body>
+</html>
